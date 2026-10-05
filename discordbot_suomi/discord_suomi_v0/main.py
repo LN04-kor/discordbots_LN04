@@ -7,10 +7,7 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="/", intents=intents)
 
-notification_channels = {
-    "join": {},
-    "left": {}
-}
+notification_channels = {"join": {}, "left": {}}
 
 
 
