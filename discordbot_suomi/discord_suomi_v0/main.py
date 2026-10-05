@@ -123,6 +123,29 @@ async def on_member_remove(member):
 
 
 
+# /notificationchannel
+
+@bot.tree.command(name = "notificationchannel", description = "Set or disable all system notification channels.")
+@app_commands.default_permissions(manage_guild=True)
+@app_commands.describe(channel = "The channel for both join and leave notifications. Leave empty to disable both.")
+
+async def setting_channel(interaction : discord.Interaction, channel : discord.TextChannel | None = None):
+    channel_id = channel.id if channel is not None else None
+
+    notification_channels["join"][interaction.guild.id] = channel_id
+    notification_channels["left"][interaction.guild.id] = channel_id
+
+    if channel is None:
+        print(f"All Notification Channels have been disabled  |  server : {interaction.guild.name}-{interaction.guild.id}")
+        await interaction.response.send_message("Join and leave notifications have been disabled.", ephemeral = True)
+        return
+
+    print(f"All Notification Channels have been changed  |  server : {interaction.guild.name}-{interaction.guild.id}, Channel : {channel.name}-{channel.id}")
+    await interaction.response.send_message(f"Join and leave notification channels have been changed  |  Channel : {channel.name}", ephemeral = True)
+
+
+
+
 # /joinnotificationchannel
 
 @bot.tree.command(name = "joinnotificationchannel", description = "Set or disable the channel for member join notifications.")
