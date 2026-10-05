@@ -10,7 +10,7 @@ you should put in your personal token in bot.run("YOUR_BOT_TOKEN")
 
 
 ## bot list
-1. suomi <- enter/left/boost notification bot
+1. suomi <- enter/left notification bot
 
 
 
