@@ -50,6 +50,26 @@ def get_ordinal(number):
 
 
 
+# server visit period
+
+def get_stay_time(joined_at, left_at):
+
+    total_days = (left_at - joined_at).days
+
+    months = total_days // 31
+    days = total_days % 31
+
+    if months == 0:
+        return f"{days} days"
+
+    if days == 0:
+        return f"{months} months"
+
+    return f"{months} months, {days} days"
+
+
+
+
 # member join event
 
 @bot.event
@@ -85,12 +105,14 @@ async def on_member_remove(member):
     print(f"{member} has left the server.  |  Server : {member.guild.name}-{member.guild.id}, Channel : {channel.name}-{channel.id}")
 
     left_at = discord.utils.utcnow()
-    stay_time = left_at - member.joined_at
+    stay_time = get_stay_time(member.joined_at, left_at)
     embed = discord.Embed( title = f"{member.display_name} has left the server", color = discord.Color.blue())
     embed.set_thumbnail(url = member.display_avatar.url)
     embed.add_field(name = member.display_name, value = member.mention, inline = False)
     embed.add_field(name = "Server Leave Date", value = f"{discord.utils.format_dt(left_at, style='F')}({discord.utils.format_dt(left_at, style='R')})", inline = False)
     embed.add_field(name = "Time On Server", value = stay_time, inline = False)
+
+    await channel.send(embed = embed)
 
 
 
