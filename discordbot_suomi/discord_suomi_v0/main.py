@@ -7,15 +7,18 @@ intents.members = True
 
 bot = commands.Bot(command_prefix="/", intents=intents)
 
-notification_channels = {}
+notification_channels = {
+    "join": {},
+    "left": {}
+}
 
 
 
 
 # event handler
 
-async def get_notification_channel(guild):
-    channel_id = notification_channels.get(guild.id)
+async def get_notification_channel(guild, notification_type):
+    channel_id = notification_channels[notification_type].get(guild.id)
 
     if channel_id is None:
         return None
@@ -74,7 +77,7 @@ def get_stay_time(joined_at, left_at):
 
 @bot.event
 async def on_member_join(member):
-    channel = await get_notification_channel(member.guild)
+    channel = await get_notification_channel(member.guild, "join")
 
     if channel is None:
         return
@@ -97,7 +100,7 @@ async def on_member_join(member):
 
 @bot.event
 async def on_member_remove(member):
-    channel = await get_notification_channel(member.guild)
+    channel = await get_notification_channel(member.guild, "left")
 
     if channel is None:
         return
@@ -123,16 +126,42 @@ async def on_member_remove(member):
 
 
 
-# /notificationchannel
+# /joinnotificationchannel
 
-@bot.tree.command(name = "notificationchannel", description = "Set the channel for sending system notifications.")
+@bot.tree.command(name = "joinnotificationchannel", description = "Set or disable the channel for member join notifications.")
 @app_commands.default_permissions(manage_guild=True)
-@app_commands.describe(channel = "The channel where notifications will be sent.")
+@app_commands.describe(channel = "The channel for join notifications. Leave empty to disable join notifications.")
 
-async def setting_channel(interaction : discord.Interaction, channel : discord.TextChannel):
-    notification_channels[interaction.guild.id] = channel.id
-    print(f"Notification Channel has been changed  |  server : {interaction.guild.name}-{interaction.guild.id}, Channel : {channel.name}-{channel.id}")
-    await interaction.response.send_message(f"Notification Channel has been changed  |  Channel : {channel.name}", ephemeral = True)
+async def setting_join_channel(interaction : discord.Interaction, channel : discord.TextChannel | None = None):
+    notification_channels["join"][interaction.guild.id] = channel.id if channel is not None else None
+
+    if channel is None:
+        print(f"Join Notification Channel has been disabled  |  server : {interaction.guild.name}-{interaction.guild.id}")
+        await interaction.response.send_message("Join notifications have been disabled.", ephemeral = True)
+        return
+
+    print(f"Join Notification Channel has been changed  |  server : {interaction.guild.name}-{interaction.guild.id}, Channel : {channel.name}-{channel.id}")
+    await interaction.response.send_message(f"Join Notification Channel has been changed  |  Channel : {channel.name}", ephemeral = True)
+
+
+
+
+# /leftnotificationchannel
+
+@bot.tree.command(name = "leftnotificationchannel", description = "Set or disable the channel for member leave notifications.")
+@app_commands.default_permissions(manage_guild=True)
+@app_commands.describe(channel = "The channel for leave notifications. Leave empty to disable leave notifications.")
+
+async def setting_left_channel(interaction : discord.Interaction, channel : discord.TextChannel | None = None):
+    notification_channels["left"][interaction.guild.id] = channel.id if channel is not None else None
+
+    if channel is None:
+        print(f"Leave Notification Channel has been disabled  |  server : {interaction.guild.name}-{interaction.guild.id}")
+        await interaction.response.send_message("Leave notifications have been disabled.", ephemeral = True)
+        return
+
+    print(f"Leave Notification Channel has been changed  |  server : {interaction.guild.name}-{interaction.guild.id}, Channel : {channel.name}-{channel.id}")
+    await interaction.response.send_message(f"Leave Notification Channel has been changed  |  Channel : {channel.name}", ephemeral = True)
 
 
 
