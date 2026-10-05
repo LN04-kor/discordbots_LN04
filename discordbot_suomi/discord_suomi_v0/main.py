@@ -117,6 +117,12 @@ async def on_member_remove(member):
 
 
 
+
+
+    
+
+
+
 # /notificationchannel
 
 @bot.tree.command(name = "notificationchannel", description = "Set the channel for sending system notifications.")
