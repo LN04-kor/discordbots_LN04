@@ -1,8 +1,7 @@
 from contextlib import asynccontextmanager
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from math import isqrt
 from pathlib import Path
-from zoneinfo import ZoneInfo
 import sqlite3
 import threading
 
@@ -17,7 +16,7 @@ DATABASE_PATH = Path(__file__).with_name("klukai.db")
 API_HOST = "127.0.0.1"
 API_PORT = 8000
 NOTIFICATION_TYPES = {"join", "left"}
-RANKING_TIMEZONE = ZoneInfo("Asia/Seoul")
+RANKING_TIMEZONE = timezone(timedelta(hours=9), name="KST")
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="/", intents=intents)
