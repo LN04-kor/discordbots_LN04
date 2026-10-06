@@ -178,11 +178,11 @@ async def status(interaction: discord.Interaction):
     levels_state = "Enabled" if data["levels_enabled"] else "Disabled"
 
     embed = discord.Embed(title="Server bot status", color=discord.Color.blue())
-    embed.add_field(name="Experience system", value=experience_state, inline=True)
-    embed.add_field(name="Level display", value=levels_state, inline=True)
+    embed.add_field(name="Experience system", value=experience_state, inline=False)
+    embed.add_field(name="Level display", value=levels_state, inline=False)
     embed.add_field(name="Join notifications", value=join_channel, inline=False)
     embed.add_field(name="Leave notifications", value=left_channel, inline=False)
-    await interaction.response.send_message(embed=embed, ephemeral=True)
+    await interaction.response.send_message(embed=embed)
 
 
 @bot.tree.command(name="help", description="Show available bot commands.")
@@ -209,7 +209,7 @@ async def help_command(interaction: discord.Interaction):
         inline=False,
     )
     embed.set_footer(text="Server management commands require Manage Server permission.")
-    await interaction.response.send_message(embed=embed, ephemeral=True)
+    await interaction.response.send_message(embed=embed)
 
 
 @bot.tree.command(name="profile", description="Show a member's experience profile.")
