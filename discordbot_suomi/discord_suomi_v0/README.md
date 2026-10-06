@@ -6,14 +6,14 @@ left, join notification system included
 
 eng only
 ## /notificationchannel channel:
-set the channel to send join/left notifications
+set the channel to send join/left notifications\n
 if you don't want to send notifications, type only /notificationchannel
 
 ## /joinnotificationchannel channel:
-set only the channel to send join notifications 
+set only the channel to send join notifications\n
 if you don't want to send notifications, type only /joinnotificationchannel
 
 ## /joinnotificationchannel channel:
-set only the channel to send left notifications 
+set only the channel to send left notifications\n
 if you don't want to send notifications, type only /leftnotificationchannel
 
