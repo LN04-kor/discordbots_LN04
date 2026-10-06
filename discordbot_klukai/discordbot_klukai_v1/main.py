@@ -17,6 +17,7 @@ API_HOST = "127.0.0.1"
 API_PORT = 8000
 NOTIFICATION_TYPES = {"join", "left"}
 RANKING_TIMEZONE = timezone(timedelta(hours=9), name="KST")
+LEVEL_EXP_BASE = 250
 
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="/", intents=intents)
@@ -93,13 +94,13 @@ def get_settings(connection, guild_id: int):
 
 
 def get_level(total_exp: int):
-    return isqrt(total_exp // 100) + 1
+    return isqrt(total_exp // LEVEL_EXP_BASE) + 1
 
 
 def level_details(total_exp: int):
     level = get_level(total_exp)
-    level_start_exp = (level - 1) ** 2 * 100
-    next_level_exp = level**2 * 100
+    level_start_exp = (level - 1) ** 2 * LEVEL_EXP_BASE
+    next_level_exp = level**2 * LEVEL_EXP_BASE
     return {
         "level": level,
         "level_start_exp": level_start_exp,
@@ -183,6 +184,24 @@ async def get_notification_channel(guild_id: int, notification_type: str):
     if row is None or row["channel_id"] is None:
         raise HTTPException(404, "No notification channel setting was found for this guild.")
     return {"guild_id": guild_id, "notification_type": notification_type, "channel_id": row["channel_id"]}
+
+
+@app.get("/guilds/{guild_id}/settings")
+async def get_guild_settings(guild_id: int):
+    with get_connection() as connection:
+        settings = get_settings(connection, guild_id)
+        channels = connection.execute(
+            "SELECT notification_type, channel_id FROM guild_notification_channels WHERE guild_id = ?",
+            (guild_id,),
+        ).fetchall()
+    notification_channels = {"join": None, "left": None}
+    for channel in channels:
+        notification_channels[channel["notification_type"]] = channel["channel_id"]
+    return {
+        "guild_id": guild_id,
+        **settings,
+        "notification_channels": notification_channels,
+    }
 
 
 @app.get("/guilds/{guild_id}/experience-settings")
