@@ -166,7 +166,7 @@ async def status(interaction: discord.Interaction):
         await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
         return
     try:
-        data = await klukai_request("GET", f"/guilds/${interaction.guild.id}/settings")
+        data = await klukai_request("GET", f"/guilds/{interaction.guild.id}/settings")
     except (HTTPError, URLError, TimeoutError):
         await interaction.response.send_message("Klukai is unavailable.", ephemeral=True)
         return
