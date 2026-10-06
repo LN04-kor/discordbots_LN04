@@ -14,9 +14,9 @@ if you don't want to send notifications, type only /notificationchannel
 
 ## /joinnotificationchannel channel:
 set only the channel to send join notifications  
-if you don't want to send notifications, type only /joinnotificationchannel
+if you don't want to send join notifications, type only /joinnotificationchannel
 
 ## /joinnotificationchannel channel:
 set only the channel to send left notifications  
-if you don't want to send notifications, type only /leftnotificationchannel
+if you don't want to send left notifications, type only /leftnotificationchannel
 
