@@ -209,7 +209,7 @@ async def help_command(interaction: discord.Interaction):
         inline=False,
     )
     embed.set_footer(text="Server management commands require Manage Server permission.")
-    await interaction.response.send_message(embed=embed)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
 
 
 @bot.tree.command(name="profile", description="Show a member's experience profile.")
