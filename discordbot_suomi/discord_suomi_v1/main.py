@@ -160,6 +160,58 @@ async def set_levels(interaction: discord.Interaction, enabled: bool):
     await update_guild_setting(interaction, "level-settings", enabled, "Level display")
 
 
+@bot.tree.command(name="status", description="Show this server's current bot settings.")
+async def status(interaction: discord.Interaction):
+    if interaction.guild is None:
+        await interaction.response.send_message("This command can only be used in a server.", ephemeral=True)
+        return
+    try:
+        data = await klukai_request("GET", f"/guilds/${interaction.guild.id}/settings")
+    except (HTTPError, URLError, TimeoutError):
+        await interaction.response.send_message("Klukai is unavailable.", ephemeral=True)
+        return
+
+    channels = data["notification_channels"]
+    join_channel = f"<#{channels['join']}>" if channels["join"] else "Disabled"
+    left_channel = f"<#{channels['left']}>" if channels["left"] else "Disabled"
+    experience_state = "Enabled" if data["experience_enabled"] else "Disabled"
+    levels_state = "Enabled" if data["levels_enabled"] else "Disabled"
+
+    embed = discord.Embed(title="Server bot status", color=discord.Color.blue())
+    embed.add_field(name="Experience system", value=experience_state, inline=True)
+    embed.add_field(name="Level display", value=levels_state, inline=True)
+    embed.add_field(name="Join notifications", value=join_channel, inline=False)
+    embed.add_field(name="Leave notifications", value=left_channel, inline=False)
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
+@bot.tree.command(name="help", description="Show available bot commands.")
+async def help_command(interaction: discord.Interaction):
+    embed = discord.Embed(
+        title="Suomi help",
+        description="Experience requirements increase by level. Use /status to check this server's current settings.",
+        color=discord.Color.blue(),
+    )
+    embed.add_field(
+        name="General commands",
+        value="/profile [member] — Show an experience profile.\n"
+        "/ranking [period] — Show all-time, daily, or weekly rankings.\n"
+        "/status — Show experience, level, and notification settings.",
+        inline=False,
+    )
+    embed.add_field(
+        name="Server management",
+        value="/experience <enabled> — Enable or disable experience gain.\n"
+        "/levels <enabled> — Enable or disable level display.\n"
+        "/notificationchannel [channel] — Set or disable both notification channels.\n"
+        "/joinnotificationchannel [channel] — Set or disable join notifications.\n"
+        "/leftnotificationchannel [channel] — Set or disable leave notifications.",
+        inline=False,
+    )
+    embed.set_footer(text="Server management commands require Manage Server permission.")
+    await interaction.response.send_message(embed=embed, ephemeral=True)
+
+
 @bot.tree.command(name="profile", description="Show a member's experience profile.")
 async def profile(interaction: discord.Interaction, member: discord.Member | None = None):
     if interaction.guild is None:
