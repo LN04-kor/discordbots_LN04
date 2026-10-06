@@ -16,6 +16,8 @@ intents.members = True
 bot = commands.Bot(command_prefix="/", intents=intents)
 
 
+
+
 # Klukai API helpers
 
 def send_klukai_request(method, path, payload=None):
@@ -26,38 +28,32 @@ def send_klukai_request(method, path, payload=None):
         data = json.dumps(payload).encode("utf-8")
         headers["Content-Type"] = "application/json"
 
-    request = Request(
-        f"{KLUKAI_API_URL}{path}",
-        data=data,
-        headers=headers,
-        method=method,
-    )
+    request = Request(f"{KLUKAI_API_URL}{path}", data=data, headers=headers, method=method, )
 
     with urlopen(request, timeout=5) as response:
         return json.loads(response.read().decode("utf-8"))
 
 
+
+
+# send serverdata to Klukai
+
 async def save_notification_channel(guild_id, notification_type, channel_id):
     try:
-        await asyncio.to_thread(
-            send_klukai_request,
-            "PUT",
-            f"/guilds/{guild_id}/channels/{notification_type}",
-            {"channel_id": channel_id},
-        )
+        await asyncio.to_thread(send_klukai_request, "PUT", f"/guilds/{guild_id}/channels/{notification_type}", {"channel_id": channel_id},)
         return True
     except (HTTPError, URLError, TimeoutError) as error:
         print(f"Could not save the notification channel in Klukai: {error}")
         return False
 
 
+
+
+# get serverdata from Klukai
+
 async def get_notification_channel(guild, notification_type):
     try:
-        setting = await asyncio.to_thread(
-            send_klukai_request,
-            "GET",
-            f"/guilds/{guild.id}/channels/{notification_type}",
-        )
+        setting = await asyncio.to_thread(send_klukai_request, "GET", f"/guilds/{guild.id}/channels/{notification_type}",)
     except HTTPError as error:
         if error.code != 404:
             print(f"Could not load the notification channel from Klukai: {error}")
